@@ -70,8 +70,18 @@
 <!-- 本データ（books.js を編集して本を追加・変更できます） -->
 <script src="books.js"></script>
 <script>
+// ─── Shuffle ────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // ─── State ──────────────────────────────────────────────────────────
-let queue = [...books];
+let queue = shuffle(books);
 let readingList = JSON.parse(localStorage.getItem('readingList') || '[]');
 let currentBook = null;
 let isRevealed = false;
@@ -104,7 +114,7 @@ function updateProgress() {
   const pct = books.length ? (done / books.length) * 100 : 100;
   progressBar.style.width = pct + '%';
   if (queue.length > 0) {
-    counter.textContent = `${done + 1} / ${books.length} 冊`;
+    counter.textContent = `${done} / ${books.length} 冊`;
   } else {
     counter.textContent = '';
   }
