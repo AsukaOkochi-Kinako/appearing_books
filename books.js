@@ -109,16 +109,5 @@ const books = [
     desc: '鎌倉時代の随筆文学。「無常」をテーマに、地震・洪水・飢饉など数々の天変地異と、方丈（一丈四方の庵）での隠遁生活を静かに綴る。800年以上を経ても色あせない普遍的な哲学がある。',
     link: 'https://www.aozora.gr.jp/cards/000196/files/975_20743.html',
     shopLink: 'https://www.amazon.co.jp/s?k=%E6%96%B9%E4%B8%88%E8%A8%98+%E9%B4%A8%E9%95%B7%E6%98%8E',
-  },
-  {
-    id: 9,
-    title: 'キッチン',
-    author: '吉本ばなな',
-    year: '1998年',
-    genre: '短編小説',
-    emoji: '🍌',
-    passage: `私がこの世でいちばん好きな場所は台所だと思う。`,
-    desc: '唯一の肉親であった祖母を亡くし、祖母と仲の良かった雄一とその母（実は父親）の家に同居することになったみかげ。日々の暮らしの中、何気ない二人の優しさに彼女は孤独な心を和ませていくのだが……。',
-    shopLink: 'https://www.amazon.co.jp/s?k=%E3%82%AD%E3%83%83%E3%83%81%E3%83%B3+%E5%90%89%E6%9C%AC%E3%81%B0%E3%81%AA%E3%81%AA&__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=14CHFKUT3F7W3&sprefix=%E3%82%AD%E3%83%83%E3%83%81%E3%83%B3+%E5%90%89%E6%9C%AC%E3%81%B0%E3%81%AAn%2Caps%2C227&ref=nb_sb_noss',
-  },
+  }
 ];
