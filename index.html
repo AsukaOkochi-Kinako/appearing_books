@@ -17,7 +17,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -50,6 +49,14 @@
   <div class="drawer">
     <div class="drawer-handle"></div>
     <div class="drawer-title">読みたいリスト</div>
+    <div class="genre-filter" id="genreFilter">
+      <button class="genre-filter-btn active" data-cat="すべて">すべて</button>
+      <button class="genre-filter-btn" data-cat="文学・小説">文学・小説</button>
+      <button class="genre-filter-btn" data-cat="古典・随筆">古典・随筆</button>
+      <button class="genre-filter-btn" data-cat="ファンタジー・童話">ファンタジー・童話</button>
+      <button class="genre-filter-btn" data-cat="怪異・推理">怪異・推理</button>
+      <button class="genre-filter-btn" data-cat="詩歌・耽美">詩歌・耽美</button>
+    </div>
     <div id="listContent"></div>
   </div>
 </div>
@@ -85,6 +92,7 @@ function shuffle(arr) {
 let queue = shuffle(books);
 let readingList = JSON.parse(localStorage.getItem('readingList') || '[]');
 let currentBook = null;
+let activeCategory  = 'すべて'; // ジャンルフィルター
 let isRevealed = false;
 let passageEl = null;
 let revealEl = null;
@@ -157,6 +165,7 @@ function renderPassageCard(book) {
   el.innerHTML = `
     <div class="genre-tag">${book.genre}</div>
     <p class="passage-text">${book.passage}</p>
+    <p class="passage-hint">この一節はどの本から？</p>
   `;
   return el;
 }
@@ -209,6 +218,7 @@ function loadNext() {
 
   // Clear stage (including revealed state)
   stage.classList.remove('is-revealed');
+  document.body.classList.remove('is-revealed');
   stage.innerHTML = '';
 
   passageEl = renderPassageCard(currentBook);
@@ -246,6 +256,7 @@ function revealBook() {
     // 通常フローに戻してコンテナ高さを自動調整（ボタン被り防止）
     revealEl.classList.add('active');
     stage.classList.add('is-revealed');
+  document.body.classList.add('is-revealed');
   }, 300);
 
   actionArea.style.display = 'none';
@@ -272,24 +283,65 @@ function showEmptyState() {
   counter.textContent = '';
 }
 
+// ─── Genre category map ─────────────────────────────────────────────
+const GENRE_CATEGORY = {
+  '近代文学': '文学・小説',   '短編小説': '文学・小説',
+  '自伝的小説': '文学・小説', '純文学': '文学・小説',
+  '長編小説': '文学・小説',   '長編小説・諷刺': '文学・小説',
+  '近代小説': '文学・小説',   '浪漫主義小説': '文学・小説',
+  '自然主義小説': '文学・小説','純文学・詩的小説': '文学・小説',
+  '歴史小説': '文学・小説',
+  '随筆・古典': '古典・随筆', 'エッセイ': '古典・随筆',
+  'エッセイ・評論': '古典・随筆','自然文学': '古典・随筆',
+  'ファンタジー文学': 'ファンタジー・童話',
+  '童話': 'ファンタジー・童話',
+  '幻想文学': '怪異・推理',   '怪談': '怪異・推理',
+  '民俗・怪異': '怪異・推理', '推理小説': '怪異・推理',
+  '幻想・探偵小説': '怪異・推理',
+  '短歌集': '詩歌・耽美',    '耽美小説': '詩歌・耽美',
+};
+
+function getCategory(listItem) {
+  const book = books.find(b => b.id === listItem.id);
+  return book ? (GENRE_CATEGORY[book.genre] || '文学・小説') : '文学・小説';
+}
+
 // ─── Reading list ────────────────────────────────────────────────────
 function renderList() {
+  // ── フィルターボタンの状態を同期
+  document.querySelectorAll('.genre-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === activeCategory);
+  });
+
   const lc = document.getElementById('listContent');
+
+  // フィルタリング
+  const filtered = activeCategory === 'すべて'
+    ? readingList
+    : readingList.filter(b => getCategory(b) === activeCategory);
+
   if (readingList.length === 0) {
     lc.innerHTML = `<div class="list-empty">まだリストは空です。<br>気になる一節に「読みたい」を押してみましょう。</div>`;
     return;
   }
-  lc.innerHTML = readingList.map(b => {
+  if (filtered.length === 0) {
+    lc.innerHTML = `<div class="list-empty">このジャンルの本はまだありません。</div>`;
+    return;
+  }
+
+  lc.innerHTML = filtered.map(b => {
     const coverUrl = covers[b.id];
     const coverInner = coverUrl
       ? `<img src="${coverUrl}" alt="${b.title}" onerror="this.parentElement.innerHTML='${b.emoji}'">`
       : b.emoji;
+    const cat = getCategory(b);
     return `
       <div class="list-item" data-id="${b.id}">
         <div class="list-item-cover">${coverInner}</div>
         <div class="list-item-meta">
           <div class="list-item-title">${b.title}</div>
           <div class="list-item-author">${b.author}</div>
+          <div class="list-item-cat">${cat}</div>
         </div>
         <button class="list-item-delete" data-id="${b.id}" title="リストから削除">×</button>
       </div>
@@ -362,6 +414,14 @@ nextBtn.addEventListener('click', loadNext);
 listBtn.addEventListener('click', () => {
   renderList();
   overlay.classList.add('open');
+});
+
+// カテゴリフィルター
+document.getElementById('genreFilter').addEventListener('click', e => {
+  const btn = e.target.closest('.genre-filter-btn');
+  if (!btn) return;
+  activeCategory = btn.dataset.cat;
+  renderList();
 });
 overlay.addEventListener('click', e => {
   if (e.target === overlay) overlay.classList.remove('open');
