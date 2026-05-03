@@ -9,8 +9,8 @@
   --accent: #8b1a1a;
   --accent-light: #fdf0e8;
   --border: #c8a080;
-  --grid-h: rgba(176, 46, 36, 0.38);
-  --grid-v: rgba(176, 46, 36, 0.18);
+  --grid-h: rgba(176, 46, 36, 0.1);
+  --grid-v: rgba(176, 46, 36, 0.1);
   --want: #8b1a1a;
   --skip: #c8a080;
   --radius: 2px;
