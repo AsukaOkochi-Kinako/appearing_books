@@ -1,6 +1,6 @@
 {
-  "name": "appearing books",
-  "short_name": "appearing",
+  "name": "Books That Appear",
+  "short_name": "Books That Appear",
   "description": "一節から本と出会おう",
   "start_url": "/",
   "display": "standalone",
